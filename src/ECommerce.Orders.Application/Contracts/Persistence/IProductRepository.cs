@@ -8,11 +8,11 @@ using ECommerce.Orders.Domain;
 namespace ECommerce.Orders.Application.Contracts.Persistence;
 public interface IProductRepository
 {
-    Task<IEnumerable<Product>> GetAllAsync();
-    Task<Product?> GetByIdAsync(Guid id);
+    Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task AddAsync(Product product);
-    Task DeleteAsync(Guid Id);
-    Task UpdateAsync(Product product);
+    Task AddAsync(Product product, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid Id, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Product product, CancellationToken cancellationToken = default);
 }
 

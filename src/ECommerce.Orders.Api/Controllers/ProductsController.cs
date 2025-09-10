@@ -1,6 +1,8 @@
-﻿using ECommerce.Orders.Application.Services;
-using ECommerce.Orders.Domain;
-using Microsoft.AspNetCore.Http;
+﻿using ECommerce.Orders.Application.Products.Commands.CreateProduct;
+using ECommerce.Orders.Application.Products.Commands.UpdateProduct;
+using ECommerce.Orders.Application.Products.Queries.GetAllProducts;
+using ECommerce.Orders.Application.Products.Queries.GetProductById;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.Orders.Api.Controllers;
@@ -8,43 +10,44 @@ namespace ECommerce.Orders.Api.Controllers;
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly ProductService _productService;
-    public ProductsController(ProductService productService)
+    private readonly IMediator _mediator;
+
+    public ProductsController(IMediator mediator)
     {
-        _productService = productService;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var products = await _productService.GetAllProductsAsync();
+        var products = await _mediator.Send(new GetAllProductsQuery());
         return products is null ? NotFound() : Ok(products);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var product = await _productService.GetProductAsync(id);
+        var product = await _mediator.Send(new GetProductByIdQuery(id));
         return product is null ? NotFound() : Ok(product);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Product product)
+    public async Task<IActionResult> Create([FromBody] CreateProductCommand command)
     {
-        await _productService.CreateProductAsync(product);
-        return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
+        var id = await _mediator.Send(command);
+        return CreatedAtAction(nameof(Get), new { id }, id);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, Product product)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductCommand command)
     {
-        if (id != product.Id)
+        if (id != command.Id)
             return BadRequest("Id mismatch");
 
         try
         {
-            await _productService.UpdateProductAsync(product);
-            return Ok();
+            await _mediator.Send(command);
+            return NoContent();
         }
         catch (KeyNotFoundException)
         {
@@ -52,17 +55,17 @@ public class ProductsController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        try
-        {
-            await _productService.DeleteProductAsync(id);
-            return Ok();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
-    }
+    //[HttpDelete("{id}")]
+    //public async Task<IActionResult> Delete(Guid id)
+    //{
+    //    try
+    //    {
+    //        await _productService.DeleteProductAsync(id);
+    //        return Ok();
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound();
+    //    }
+    //}
 }

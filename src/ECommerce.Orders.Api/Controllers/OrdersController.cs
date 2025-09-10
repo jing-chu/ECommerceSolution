@@ -1,6 +1,8 @@
-﻿using ECommerce.Orders.Application.Services;
-using ECommerce.Orders.Domain;
-using Microsoft.AspNetCore.Http;
+﻿using ECommerce.Orders.Application.Orders.Commands.CreateOrder;
+using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
+using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
+using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.Orders.Api.Controllers;
@@ -8,43 +10,44 @@ namespace ECommerce.Orders.Api.Controllers;
 [ApiController]
 public class OrdersController : ControllerBase
 {
-    private readonly OrderService _orderService;
-    public OrdersController(OrderService orderService)
+    private readonly IMediator _mediator;
+
+    public OrdersController(IMediator mediator)
     {
-        _orderService = orderService;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _orderService.GetAllOrdersAsync();
+        var orders = await _mediator.Send(new GetAllOrdersQuery());
         return orders is null ? NotFound() : Ok(orders);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var order = await _orderService.GetOrderAsync(id);
+        var order = await _mediator.Send(new GetOrderByIdQuery(id));
         return order is null ? NotFound() : Ok(order);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Order order)
+    public async Task<IActionResult> Create([FromBody] CreateOrderCommand command)
     {
-        await _orderService.CreateOrderAsync(order);
-        return CreatedAtAction(nameof(Get), new { id = order.Id }, order);
+        var id = await _mediator.Send(command);
+        return CreatedAtAction(nameof(Get), new { id = id }, id);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, Order order)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrderCommand command)
     {
-        if (id != order.Id)
+        if (id != command.Id)
             return BadRequest("Id mismatch");
 
         try
         {
-            await _orderService.UpdateOrderAsync(order);
-            return Ok();
+            await _mediator.Send(command);
+            return NoContent();
         }
         catch (KeyNotFoundException)
         {
@@ -52,17 +55,17 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        try
-        {
-            await _orderService.DeleteOrderAsync(id);
-            return Ok();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
-    }
+    //[HttpDelete("{id}")]
+    //public async Task<IActionResult> Delete(Guid id)
+    //{
+    //    try
+    //    {
+    //        await _orderService.DeleteOrderAsync(id);
+    //        return Ok();
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        return NotFound();
+    //    }
+    //}
 }

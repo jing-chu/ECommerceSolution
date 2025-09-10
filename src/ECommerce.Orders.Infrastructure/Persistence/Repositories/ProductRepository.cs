@@ -16,37 +16,31 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task AddAsync(Product product)
+    public async Task AddAsync(Product product, CancellationToken cancellationToken = default)
     {
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
+        await _context.Products.AddAsync(product, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var product = await _context.Products.FirstOrDefaultAsync(o => o.Id == id);
         if (product == null)
             throw new KeyNotFoundException("Product not found");
         _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync()
-        => await _context.Products.AsNoTracking().ToListAsync();
+    public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
+        => await _context.Products.AsNoTracking().ToListAsync(cancellationToken);
 
-    public async Task<Product?> GetByIdAsync(Guid id)
-        => await _context.Products.FindAsync(id);
+    public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        => await _context.Products.FindAsync(id, cancellationToken);
 
-    public async Task UpdateAsync(Product product)
+    public async Task UpdateAsync(Product product, CancellationToken cancellationToken = default)
     {
-        var existing = await _context.Products.FindAsync(product.Id);
-        if (existing == null)
-            throw new KeyNotFoundException("Product not found");
-
-        existing.Name = product.Name;
-        existing.Price = product.Price;
-
-        await _context.SaveChangesAsync();
+        _context.Products.Update(product);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

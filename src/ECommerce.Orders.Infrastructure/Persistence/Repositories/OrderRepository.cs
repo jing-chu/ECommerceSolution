@@ -15,41 +15,33 @@ public class OrderRepository : IOrderRepository
     {
         _context = context;
     }
-    public async Task AddAsync(Order order)
+
+    public async Task AddAsync(Order order, CancellationToken cancellationToken = default)
     {
         await _context.Orders.AddAsync(order);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
-       
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var order = await _context.Orders.Include(o => o.OrderLines).FirstOrDefaultAsync(o => o.Id == id);
+        var order = await _context.Orders.Include(o => o.OrderLines).FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
         if (order == null)
             throw new KeyNotFoundException("Order not found");
         _context.Orders.Remove(order);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Order>> GetAllAsync()
+    public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _context.Orders
         .Include(o => o.OrderLines).ThenInclude(ol => ol.Product)
-        .ToListAsync();
+        .ToListAsync(cancellationToken);
 
-    public async Task<Order?> GetByIdAsync(Guid id)
-        => await _context.Orders.FindAsync(id);      
+    public async Task<Order?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        => await _context.Orders.Include(o => o.OrderLines).FirstOrDefaultAsync(o => o.Id == id, cancellationToken);      
 
-    public async Task UpdateAsync(Order order)
+    public async Task UpdateAsync(Order order, CancellationToken cancellationToken = default)
     {
-        var existing = await _context.Orders.FindAsync(order.Id);
-        if (existing == null)
-            throw new KeyNotFoundException("Product not found");
-
-        existing.CustomerId = order.CustomerId;
-        existing.OrderDate = order.OrderDate;
-        existing.TotalPrice = order.TotalPrice;
-        existing.OrderLines = order.OrderLines;
-
-        await _context.SaveChangesAsync();
+        _context.Orders.Update(order);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

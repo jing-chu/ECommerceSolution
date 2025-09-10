@@ -1,7 +1,17 @@
+using System.Reflection;
 using ECommerce.Orders.Application.Contracts.Persistence;
-using ECommerce.Orders.Application.Services;
+using ECommerce.Orders.Application.Orders.Commands.CreateOrder;
+using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
+using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
+using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
+using ECommerce.Orders.Application.Products.Commands.CreateProduct;
+using ECommerce.Orders.Application.Products.Commands.DeleteProduct;
+using ECommerce.Orders.Application.Products.Commands.UpdateProduct;
+using ECommerce.Orders.Application.Products.Queries.GetAllProducts;
+using ECommerce.Orders.Application.Products.Queries.GetProductById;
 using ECommerce.Orders.Infrastructure;
 using ECommerce.Orders.Infrastructure.Persistence.Repositories;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,9 +26,37 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<OrderService>();
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(GetAllProductsQuery).Assembly)
+);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly)
+);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(GetProductByIdQuery).Assembly)
+);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(UpdateProductCommand).Assembly)
+);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(DeleteProductCommand).Assembly)
+);
 
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(GetAllOrdersQuery).Assembly)
+);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CreateOrderCommand).Assembly)
+);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(GetOrderByIdQuery).Assembly)
+);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(UpdateOrderCommand).Assembly)
+);
+//builder.Services.AddMediatR(cfg =>
+//    cfg.RegisterServicesFromAssembly(typeof(DeleteOrderCommand).Assembly)
+//);
 
 var app = builder.Build();
 
