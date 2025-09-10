@@ -35,17 +35,34 @@ public class OrdersController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = order.Id }, order);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Update(Order order)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, Order order)
     {
-        await _orderService.UpdateOrderAsync(order);
-        return Ok();
+        if (id != order.Id)
+            return BadRequest("Id mismatch");
+
+        try
+        {
+            await _orderService.UpdateOrderAsync(order);
+            return Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _orderService.DeleteOrderAsync(id);
-        return Ok();
+        try
+        {
+            await _orderService.DeleteOrderAsync(id);
+            return Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

@@ -35,17 +35,34 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Update(Product product)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, Product product)
     {
-        await _productService.UpdateProductAsync(product);
-        return Ok();
+        if (id != product.Id)
+            return BadRequest("Id mismatch");
+
+        try
+        {
+            await _productService.UpdateProductAsync(product);
+            return Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _productService.DeleteProductAsync(id);
-        return Ok();
+        try
+        {
+            await _productService.DeleteProductAsync(id);
+            return Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

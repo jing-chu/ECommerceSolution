@@ -26,7 +26,7 @@ public class ProductRepository : IProductRepository
     {
         var product = await _context.Products.FirstOrDefaultAsync(o => o.Id == id);
         if (product == null)
-            throw new KeyNotFoundException("Order not found");
+            throw new KeyNotFoundException("Product not found");
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
 
