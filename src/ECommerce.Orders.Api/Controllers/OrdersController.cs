@@ -1,4 +1,5 @@
 ﻿using ECommerce.Orders.Application.Orders.Commands.CreateOrder;
+using ECommerce.Orders.Application.Orders.Commands.DeleteOrder;
 using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
 using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
@@ -55,17 +56,17 @@ public class OrdersController : ControllerBase
         }
     }
 
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> Delete(Guid id)
-    //{
-    //    try
-    //    {
-    //        await _orderService.DeleteOrderAsync(id);
-    //        return Ok();
-    //    }
-    //    catch (KeyNotFoundException)
-    //    {
-    //        return NotFound();
-    //    }
-    //}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            await _mediator.Send(new DeleteOrderCommand(id));
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 }

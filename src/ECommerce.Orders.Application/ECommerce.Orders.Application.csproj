@@ -14,8 +14,4 @@
     <ProjectReference Include="..\ECommerce.Orders.Domain\ECommerce.Orders.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Orders\Commands\DeleteOrder\" />
-  </ItemGroup>
-
 </Project>

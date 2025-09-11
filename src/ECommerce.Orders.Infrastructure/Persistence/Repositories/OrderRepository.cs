@@ -33,15 +33,21 @@ public class OrderRepository : IOrderRepository
 
     public async Task<IEnumerable<Order>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _context.Orders
+        .Where(o => !o.IsDeleted)
         .Include(o => o.OrderLines).ThenInclude(ol => ol.Product)
         .ToListAsync(cancellationToken);
 
     public async Task<Order?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-        => await _context.Orders.Include(o => o.OrderLines).FirstOrDefaultAsync(o => o.Id == id, cancellationToken);      
+        => await _context.Orders
+        .Where(o => !o.IsDeleted)
+        .Include(o => o.OrderLines)
+        .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);      
 
     public async Task UpdateAsync(Order order, CancellationToken cancellationToken = default)
     {
-        _context.Orders.Update(order);
+        // Omdat de 'order' al wordt gevolgd door de DbContext (opgehaald via GetByIdAsync)
+        // EF Core is slim genoeg om te zien welke properties zijn veranderd en genereert
+        // een efficiënt SQL statement (bv. UPDATE Orders SET IsDeleted = 1 WHERE ...).
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
