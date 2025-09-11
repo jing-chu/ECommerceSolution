@@ -33,14 +33,18 @@ public class ProductRepository : IProductRepository
     }
 
     public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
-        => await _context.Products.AsNoTracking().ToListAsync(cancellationToken);
+        => await _context.Products
+        .Where(p => p.IsAvailable)
+        .AsNoTracking()
+        .ToListAsync(cancellationToken);
 
     public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-        => await _context.Products.FindAsync(id, cancellationToken);
+        => await _context.Products
+        .Where(p => p.IsAvailable)
+        .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
     public async Task UpdateAsync(Product product, CancellationToken cancellationToken = default)
     {
-        _context.Products.Update(product);
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

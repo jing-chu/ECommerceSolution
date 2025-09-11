@@ -1,4 +1,5 @@
 ﻿using ECommerce.Orders.Application.Products.Commands.CreateProduct;
+using ECommerce.Orders.Application.Products.Commands.DeleteProduct;
 using ECommerce.Orders.Application.Products.Commands.UpdateProduct;
 using ECommerce.Orders.Application.Products.Queries.GetAllProducts;
 using ECommerce.Orders.Application.Products.Queries.GetProductById;
@@ -55,17 +56,17 @@ public class ProductsController : ControllerBase
         }
     }
 
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> Delete(Guid id)
-    //{
-    //    try
-    //    {
-    //        await _productService.DeleteProductAsync(id);
-    //        return Ok();
-    //    }
-    //    catch (KeyNotFoundException)
-    //    {
-    //        return NotFound();
-    //    }
-    //}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            await _mediator.Send(new DeleteProductCommand(id));
+            return Ok();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 }

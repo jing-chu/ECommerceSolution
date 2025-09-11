@@ -19,18 +19,21 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Product>()
-            .HasMany<OrderLine>()
-            .WithOne(ol => ol.Product)
-            .HasForeignKey(ol => ol.ProductId);
+        modelBuilder.Entity<Product>(entity =>
+        {
+            // Relatie configuratie met OrderLine
+            entity.HasMany<OrderLine>()
+                  .WithOne(ol => ol.Product)
+                  .HasForeignKey(ol => ol.ProductId);
+
+            // Property configuratie
+            entity.Property(p => p.IsAvailable)
+                  .HasDefaultValue(true); 
+        });
 
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderLines)
             .WithOne(ol => ol.Order)
             .HasForeignKey(ol => ol.OrderId);
-
-
     }
-
-
 }
