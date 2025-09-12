@@ -1,6 +1,7 @@
 using System.Reflection;
 using ECommerce.Orders.Application.Contracts.Persistence;
 using ECommerce.Orders.Application.Orders.Commands.CreateOrder;
+using ECommerce.Orders.Application.Orders.Commands.DeleteOrder;
 using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
 using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
@@ -11,6 +12,7 @@ using ECommerce.Orders.Application.Products.Queries.GetAllProducts;
 using ECommerce.Orders.Application.Products.Queries.GetProductById;
 using ECommerce.Orders.Infrastructure;
 using ECommerce.Orders.Infrastructure.Persistence.Repositories;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,9 +57,24 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(UpdateOrderCommand).Assembly)
 );
-//builder.Services.AddMediatR(cfg =>
-//    cfg.RegisterServicesFromAssembly(typeof(DeleteOrderCommand).Assembly)
-//);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(DeleteOrderCommand).Assembly)
+);
+
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h => {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
 
 var app = builder.Build();
 

@@ -4,6 +4,7 @@ using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
 using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderSummaryById;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +13,14 @@ namespace ECommerce.Orders.Api.Controllers;
 [ApiController]
 public class OrdersController : ControllerBase
 {
-    private readonly IMediator _mediator;
 
-    public OrdersController(IMediator mediator)
+    private readonly IMediator _mediator;
+    private readonly IPublishEndpoint _publishEndpoint;
+
+    public OrdersController(IMediator mediator, IPublishEndpoint publishEndpoint)
     {
         _mediator = mediator;
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -41,10 +45,11 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> Create([FromBody] CreateOrderCommand command)
     {
-        var id = await _mediator.Send(command);
-        return CreatedAtAction(nameof(Get), new { id = id }, id);
+        await _publishEndpoint.Publish(command);
+        return Accepted();
     }
 
     [HttpPut("{id}")]

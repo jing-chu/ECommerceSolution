@@ -8,7 +8,7 @@ namespace ECommerce.Orders.Domain;
 public class Order
 {
     public Guid Id { get; set; }
-    public string CustomerId { get; set; } 
+    public string CustomerId { get; set; } = string.Empty;
     public DateTime OrderDate { get; set; }
     public decimal TotalPrice { get; set; }
     public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();

@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # de poort die .NET apps gebruiken om berichten te versturen/ontvangen.
+      - "15672:15672"  # de RabbitMQ Management UI (openen in browser: http://localhost:15672)
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  api:
+    build:
+      context: .
+      dockerfile: src/ECommerce.Orders.Api/Dockerfile
+    ports:
+      - "8080:80" # Map de containerpoort 80 naar hostpoort 8080
+    depends_on:
+      - rabbitmq
+
+  worker:
+    build:
+      context: .
+      dockerfile: src/ECommerce.Orders.Worker/Dockerfile
+    depends_on:
+      - rabbitmq
+
+      
