@@ -3,6 +3,7 @@ using ECommerce.Orders.Application.Orders.Commands.DeleteOrder;
 using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
 using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
+using ECommerce.Orders.Application.Orders.Queries.GetOrderSummaryById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,13 @@ public class OrdersController : ControllerBase
     {
         var orders = await _mediator.Send(new GetAllOrdersQuery());
         return orders is null ? NotFound() : Ok(orders);
+    }
+
+    [HttpGet("{id}/summary")]
+    public async Task<IActionResult> GetSummary(Guid id)
+    {
+        var order = await _mediator.Send(new GetOrderSummaryByIdQuery(id));
+        return order is null ? NotFound() : Ok(order);
     }
 
     [HttpGet("{id}")]

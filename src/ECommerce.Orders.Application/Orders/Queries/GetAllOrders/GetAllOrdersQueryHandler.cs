@@ -8,16 +8,16 @@ using ECommerce.Orders.Domain;
 using MediatR;
 
 namespace ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
-public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, IEnumerable<Order>>
+public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, IEnumerable<OrderSummary>>
 {
-    private readonly IOrderRepository _orderRepo;
-    public GetAllOrdersQueryHandler(IOrderRepository orderRepo)
+    private readonly IOrderSummaryRepository _orderSummaryRepo;
+    public GetAllOrdersQueryHandler(IOrderSummaryRepository orderSummaryRepo)
     {
-        _orderRepo = orderRepo;
+        _orderSummaryRepo = orderSummaryRepo;
     }
 
-    async Task<IEnumerable<Order>> IRequestHandler<GetAllOrdersQuery, IEnumerable<Order>>.Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
+    async Task<IEnumerable<OrderSummary>> IRequestHandler<GetAllOrdersQuery, IEnumerable<OrderSummary>>.Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
     {
-        return await _orderRepo.GetAllAsync(cancellationToken);
+        return await _orderSummaryRepo.GetAllAsync(cancellationToken);
     }
 }

@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderLine> OrderLines { get; set; }
+    public DbSet<OrderSummary> OrderSummaries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,5 +36,10 @@ public class AppDbContext : DbContext
             .HasMany(o => o.OrderLines)
             .WithOne(ol => ol.Order)
             .HasForeignKey(ol => ol.OrderId);
+
+        modelBuilder.Entity<OrderSummary>(entity =>
+        {
+            entity.HasKey(o => o.Id);
+        });
     }
 }

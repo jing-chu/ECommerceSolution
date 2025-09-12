@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 using ECommerce.Orders.Domain;
 using MediatR;
 
-namespace ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
-public record GetAllOrdersQuery() : IRequest<IEnumerable<OrderSummary>>;
+namespace ECommerce.Orders.Application.Orders.Queries.GetOrderSummaryById;
+public record GetOrderSummaryByIdQuery(Guid Id) : IRequest<OrderSummary?>;
