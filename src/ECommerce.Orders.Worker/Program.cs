@@ -22,42 +22,44 @@ builder.Services.AddHostedService<Worker>();
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
-        builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+        var connectionString = hostContext.Configuration.GetConnectionString("DefaultConnection");
 
-        builder.Services.AddScoped<IProductRepository, ProductRepository>();
-        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-        builder.Services.AddScoped<IOrderSummaryRepository, OrderSummaryRepository>();
+        services.AddDbContext<AppDbContext>(options => 
+            options.UseSqlite(connectionString));
 
-        builder.Services.AddMediatR(cfg =>
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IOrderSummaryRepository, OrderSummaryRepository>();
+
+        services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetAllProductsQuery).Assembly)
 );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly)
         );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(GetProductByIdQuery).Assembly)
         );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(UpdateProductCommand).Assembly)
         );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(DeleteProductCommand).Assembly)
         );
 
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(GetAllOrdersQuery).Assembly)
         );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(CreateOrderCommand).Assembly)
         );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(GetOrderByIdQuery).Assembly)
         );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(UpdateOrderCommand).Assembly)
         );
-        builder.Services.AddMediatR(cfg =>
+        services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(DeleteOrderCommand).Assembly)
         );
 
