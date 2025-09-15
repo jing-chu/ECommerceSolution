@@ -1,21 +1,32 @@
-# --- Build stage ---
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Fase 1: De 'Build' omgeving
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy csproj files and restore dependencies
-COPY ["ECommerce.Api/ECommerce.Api.csproj", "ECommerce.Api/"]
-# (herhaal eventueel voor andere project references, bv. Orders, Core, etc.)
-RUN dotnet restore "ECommerce.Api/ECommerce.Api.csproj"
+# Kopieer project- en solution-bestanden voor caching
+COPY ["ECommerceSolution.sln", "."]
+COPY ["src/ECommerce.Orders.Api/ECommerce.Orders.Api.csproj", "src/ECommerce.Orders.Api/"]
+COPY ["src/ECommerce.Orders.Application/ECommerce.Orders.Application.csproj", "src/ECommerce.Orders.Application/"]
+COPY ["src/ECommerce.Orders.Domain/ECommerce.Orders.Domain.csproj", "src/ECommerce.Orders.Domain/"]
+COPY ["src/ECommerce.Orders.Infrastructure/ECommerce.Orders.Infrastructure.csproj", "src/ECommerce.Orders.Infrastructure/"]
+COPY ["src/ECommerce.Orders.Worker/ECommerce.Orders.Worker.csproj", "src/ECommerce.Orders.Worker/"]
 
-# Copy rest of the source
+# Herstel NuGet packages
+RUN dotnet restore "ECommerceSolution.sln"
+
+# Kopieer de rest van de code
 COPY . .
 
-# Build and publish
-WORKDIR "/src/ECommerce.Api"
-RUN dotnet publish "ECommerce.Api.csproj" -c Release -o /app/publish
+# Publiceer de API
+RUN dotnet publish "src/ECommerce.Orders.Api/ECommerce.Orders.Api.csproj" -c Release -o /app/publish
 
-# --- Runtime stage ---
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+
+# Fase 2: De 'Final' productieomgeving
+# We gebruiken de 'aspnet' runtime, want dit is een web applicatie
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
+
+# Kopieer de gepubliceerde output
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "ECommerce.Api.dll"]
+
+# Start de API
+ENTRYPOINT ["dotnet", "ECommerce.Orders.Api.dll"]

@@ -61,10 +61,8 @@ IHost host = Host.CreateDefaultBuilder(args)
             cfg.RegisterServicesFromAssembly(typeof(DeleteOrderCommand).Assembly)
         );
 
-        // --- MASSTRANSIT CONFIGURATIE ---
         services.AddMassTransit(x =>
         {
-            // Registreer je consumer
             x.AddConsumer<CreateOrderCommandConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
@@ -74,12 +72,10 @@ IHost host = Host.CreateDefaultBuilder(args)
                     h.Password("guest");
                 });
 
-                // Configureer het ontvangende endpoint. MassTransit maakt automatisch
-                // een queue aan voor je consumer.
                 cfg.ConfigureEndpoints(context);
             });
         });
-        // --- EINDE MASSTRANSIT CONFIGURATIE ---
+       
     })
     .Build();
 
