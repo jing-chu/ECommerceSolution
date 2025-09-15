@@ -14,6 +14,9 @@ services:
     build:
       context: .
       dockerfile: src/ECommerce.Orders.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80  
     ports:
       - "8080:80" # Map de containerpoort 80 naar hostpoort 8080
     depends_on:

@@ -14,7 +14,9 @@ using ECommerce.Orders.Infrastructure;
 using ECommerce.Orders.Infrastructure.Persistence.Repositories;
 using MassTransit;
 using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,26 +68,41 @@ builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h => {
+        //Containers in hetzelfde Docker Compose netwerk praten met elkaar via hun servicenamen, niet via localhost.
+        cfg.Host("rabbitmq", "/", h => {
             h.Username("guest");
             h.Password("guest");
         });
+
+        // Een oplossing van een klassieke race condition
+        // Vertelt MassTransit om bij het opstarten niet op te geven, maar het
+        // opnieuw te proberen als de verbinding mislukt.
+        // Hier: probeer het 5 keer, met 10 seconden tussen elke poging.
+        cfg.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(10)));
 
         cfg.ConfigureEndpoints(context);
     });
 });
 
-
 var app = builder.Build();
+
+//past automatisch database migraties toe bij het opstarten
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-   
+    app.MapOpenApi();  //http://localhost:5121/openapi/v1.json
 }
 
 app.MapControllers();
+
+// Voorbeeld endpoints
+app.MapGet("/", () => "Hello World!");
 
 app.Run();
 

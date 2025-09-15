@@ -67,10 +67,17 @@ IHost host = Host.CreateDefaultBuilder(args)
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", h => {
+                //Containers in hetzelfde Docker Compose netwerk praten met elkaar via hun servicenamen, niet via localhost.
+                cfg.Host("rabbitmq", "/", h => {
                     h.Username("guest");
                     h.Password("guest");
                 });
+
+                // Een oplossing van een klassieke race condition
+                // Vertelt MassTransit om bij het opstarten niet op te geven, maar het
+                // opnieuw te proberen als de verbinding mislukt.
+                // Hier: probeer het 5 keer, met 10 seconden tussen elke poging.
+                cfg.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(10)));
 
                 cfg.ConfigureEndpoints(context);
             });
@@ -78,5 +85,11 @@ IHost host = Host.CreateDefaultBuilder(args)
        
     })
     .Build();
+
+using (var scope = host.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
 
 await host.RunAsync();
