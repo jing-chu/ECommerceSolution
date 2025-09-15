@@ -8,6 +8,8 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
 
   api:
     build:
@@ -16,9 +18,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80  
-      - ConnectionStrings__DefaultConnection=DataSource=ecommerce.db  # de concetionString oplossing in Docker container
+      - ConnectionStrings__DefaultConnection=DataSource=/app/database/ecommerce.db  # de concetionString oplossing in Docker container
     ports:
       - "8080:80" # Map de containerpoort 80 naar hostpoort 8080
+    volumes:
+      - ./data:/app/database  # een BIND MOUNT naar lokale map
     depends_on:
       - rabbitmq
 
@@ -28,8 +32,11 @@ services:
       dockerfile: src/ECommerce.Orders.Worker/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=DataSource=ecommerce.db
+      - ConnectionStrings__DefaultConnection=DataSource=/app/database/ecommerce.db
+    volumes:
+      - ./data:/app/database
     depends_on:
       - rabbitmq
 
-      
+volumes:
+  rabbitmq-data:
