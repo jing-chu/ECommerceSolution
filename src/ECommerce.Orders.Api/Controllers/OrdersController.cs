@@ -1,6 +1,4 @@
-﻿using ECommerce.Orders.Application.Orders.Commands.CreateOrder;
-using ECommerce.Orders.Application.Orders.Commands.DeleteOrder;
-using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
+﻿using ECommerce.Orders.Contracts.Orders.Commands;
 using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderSummaryById;
@@ -70,12 +68,13 @@ public class OrdersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
-            await _mediator.Send(new DeleteOrderCommand(id));
-            return NoContent();
+            await _publishEndpoint.Publish(new DeleteOrderCommand(id));
+            return Accepted();
         }
         catch (KeyNotFoundException)
         {

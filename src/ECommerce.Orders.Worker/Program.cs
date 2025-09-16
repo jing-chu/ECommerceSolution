@@ -9,6 +9,7 @@ using ECommerce.Orders.Application.Products.Commands.DeleteProduct;
 using ECommerce.Orders.Application.Products.Commands.UpdateProduct;
 using ECommerce.Orders.Application.Products.Queries.GetAllProducts;
 using ECommerce.Orders.Application.Products.Queries.GetProductById;
+using ECommerce.Orders.Contracts.Orders.Commands;
 using ECommerce.Orders.Infrastructure;
 using ECommerce.Orders.Infrastructure.Persistence.Repositories;
 using ECommerce.Orders.Worker;

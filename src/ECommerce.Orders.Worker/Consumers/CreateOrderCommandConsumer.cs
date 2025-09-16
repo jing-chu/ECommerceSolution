@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ECommerce.Orders.Application.Orders.Commands.CreateOrder;
+using ECommerce.Orders.Contracts.Orders.Commands;
 using MassTransit;
 using MediatR;
 

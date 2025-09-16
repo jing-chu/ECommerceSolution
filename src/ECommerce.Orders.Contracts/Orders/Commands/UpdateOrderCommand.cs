@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
+namespace ECommerce.Orders.Contracts.Orders.Commands;
 public record UpdateOrderCommand(
     Guid Id,
     string CustomerId,

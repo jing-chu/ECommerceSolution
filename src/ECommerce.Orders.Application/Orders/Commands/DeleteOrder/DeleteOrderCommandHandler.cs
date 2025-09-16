@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ECommerce.Orders.Application.Contracts.Persistence;
+using ECommerce.Orders.Contracts.Orders.Commands;
 using MediatR;
 
 namespace ECommerce.Orders.Application.Orders.Commands.DeleteOrder;
@@ -22,5 +23,7 @@ internal class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
             throw new KeyNotFoundException("Order not found");
         existing.SoftDelete();
         await _orderRepository.UpdateAsync(existing, cancellationToken);
+
+        //Todo: De handler publiceert een OrderDeletedEvent(order.Id) bericht naar RabbitMQ
     }
 }

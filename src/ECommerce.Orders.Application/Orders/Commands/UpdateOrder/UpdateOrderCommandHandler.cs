@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ECommerce.Orders.Application.Contracts.Persistence;
+using ECommerce.Orders.Contracts.Orders.Commands;
 using ECommerce.Orders.Domain;
 using MediatR;
 

@@ -7,13 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.3-develop.2365" />
     <PackageReference Include="MediatR" Version="13.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ECommerce.Orders.Domain\ECommerce.Orders.Domain.csproj" />
-    <ProjectReference Include="..\ECommerce.Orders.Contracts\ECommerce.Orders.Contracts.csproj" />
+    <Folder Include="Orders\Events\" />
   </ItemGroup>
 
 </Project>
