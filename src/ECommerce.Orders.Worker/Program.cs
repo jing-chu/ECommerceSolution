@@ -1,7 +1,4 @@
 using ECommerce.Orders.Application.Contracts.Persistence;
-using ECommerce.Orders.Application.Orders.Commands.CreateOrder;
-using ECommerce.Orders.Application.Orders.Commands.DeleteOrder;
-using ECommerce.Orders.Application.Orders.Commands.UpdateOrder;
 using ECommerce.Orders.Application.Orders.Queries.GetAllOrders;
 using ECommerce.Orders.Application.Orders.Queries.GetOrderById;
 using ECommerce.Orders.Application.Products.Commands.CreateProduct;
@@ -67,6 +64,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddMassTransit(x =>
         {
             x.AddConsumer<CreateOrderCommandConsumer>();
+            x.AddConsumer<DeleteOrderCommandConsumer> ();
             x.AddConsumer<OrderEventsConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>

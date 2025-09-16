@@ -11,4 +11,6 @@ public interface IOrderSummaryRepository
     Task AddAsync(OrderSummary orderSummary, CancellationToken cancellationToken = default);
     Task<IEnumerable<OrderSummary>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<OrderSummary?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid Id, CancellationToken cancellationToken = default);
+
 }

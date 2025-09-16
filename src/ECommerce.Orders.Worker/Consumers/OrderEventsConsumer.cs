@@ -11,7 +11,7 @@ using ECommerce.Orders.Domain;
 using MassTransit;
 
 namespace ECommerce.Orders.Worker.Consumers;
-public class OrderEventsConsumer : IConsumer<OrderCreatedEvent>
+public class OrderEventsConsumer : IConsumer<OrderCreatedEvent>, IConsumer<OrderDeletedEvent>
 {
     private readonly IOrderSummaryRepository _orderSummaryRepository;
     private readonly IOrderRepository _orderRepository;
@@ -44,5 +44,11 @@ public class OrderEventsConsumer : IConsumer<OrderCreatedEvent>
 
             await _orderSummaryRepository.AddAsync(summary);
         }   
+    }
+
+    public async Task Consume(ConsumeContext<OrderDeletedEvent> context)
+    {
+        var orderId = context.Message.OrderId;
+        await _orderSummaryRepository.DeleteAsync(orderId);
     }
 }

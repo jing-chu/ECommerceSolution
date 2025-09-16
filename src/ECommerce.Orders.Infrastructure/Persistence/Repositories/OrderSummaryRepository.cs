@@ -22,6 +22,16 @@ public class OrderSummaryRepository : IOrderSummaryRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task DeleteAsync(Guid Id, CancellationToken cancellationToken = default)
+    {
+        var summary = await _context.OrderSummaries.FindAsync(Id);
+        if(summary != null)
+        {
+            _context.OrderSummaries.Remove(summary);
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public async Task<IEnumerable<OrderSummary>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.OrderSummaries.ToListAsync(cancellationToken);

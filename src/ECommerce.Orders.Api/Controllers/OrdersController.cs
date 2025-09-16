@@ -51,6 +51,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrderCommand command)
     {
         if (id != command.Id)
@@ -70,15 +71,8 @@ public class OrdersController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<IActionResult> Delete(Guid id)
-    {
-        try
-        {
-            await _publishEndpoint.Publish(new DeleteOrderCommand(id));
-            return Accepted();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+    {       
+        await _publishEndpoint.Publish(new DeleteOrderCommand(id));
+        return Accepted();    
     }
 }
