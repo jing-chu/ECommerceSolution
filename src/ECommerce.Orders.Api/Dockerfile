@@ -8,6 +8,7 @@ COPY ["src/ECommerce.Orders.Api/ECommerce.Orders.Api.csproj", "src/ECommerce.Ord
 COPY ["src/ECommerce.Orders.Application/ECommerce.Orders.Application.csproj", "src/ECommerce.Orders.Application/"]
 COPY ["src/ECommerce.Orders.Domain/ECommerce.Orders.Domain.csproj", "src/ECommerce.Orders.Domain/"]
 COPY ["src/ECommerce.Orders.Infrastructure/ECommerce.Orders.Infrastructure.csproj", "src/ECommerce.Orders.Infrastructure/"]
+COPY ["src/ECommerce.Orders.Contracts/ECommerce.Orders.Contracts.csproj", "src/ECommerce.Orders.Contracts/"]
 COPY ["src/ECommerce.Orders.Worker/ECommerce.Orders.Worker.csproj", "src/ECommerce.Orders.Worker/"]
 
 # Herstel NuGet packages

@@ -10,6 +10,7 @@ using ECommerce.Orders.Domain;
 using MediatR;
 using MassTransit;
 using ECommerce.Orders.Contracts.Orders.Commands;
+using ECommerce.Orders.Contracts.Orders.Events;
 
 namespace ECommerce.Orders.Application.Orders.Commands.CreateOrder;
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
@@ -44,25 +45,8 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
 
         await _orderRepository.AddAsync(order, cancellationToken);
 
-        //var summary = new OrderSummary
-        //{
-        //    Id = order.Id,
-        //    CustomerId = request.CustomerId,
-        //    OrderDate = request.OrderDate,
-        //    TotalPrice = request.TotalPrice,
-        //    OrderStatus = "Processing",
-        //    ProductsJson = JsonSerializer.Serialize(order.OrderLines.Select(ol => new
-        //    {
-        //        ol.ProductId,
-        //        ol.Quantity,
-        //        ol.UnitPrice,
-        //    }))
-        //};
-
-        //await _orderSummaryRepository.AddAsync(summary, cancellationToken);
-
-        //Todo op de schrijf-kant: enige taak uitvoeren en daarna een "event" publiceren
-        //await _publishEndpoint.Publish(new OrderCreatedEvent(order.Id));
+        //op de schrijf-kant: nadat enige taak uitvoeren en een "event" publiceren
+        await _publishEndpoint.Publish(new OrderCreatedEvent(order.Id));
 
         return order.Id;
     }
