@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ECommerce.Orders.Contracts.Orders.Commands;
+using MassTransit;
+using MediatR;
+
+namespace ECommerce.Orders.Worker.Consumers;
+public class UpdateOrderCommandConsumer : IConsumer<UpdateOrderCommand>
+{
+    private readonly IMediator _mediator;
+    public UpdateOrderCommandConsumer(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    public async Task Consume(ConsumeContext<UpdateOrderCommand> context)
+    {
+        // De consumer ontvangt het bericht van RabbitMQ en stuurt het
+        // naar de MediatR handler die al het werk doet.
+        await _mediator.Send(context.Message);
+    }
+}

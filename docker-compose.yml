@@ -10,6 +10,8 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - ecommerce-net
 
   api:
     build:
@@ -25,6 +27,8 @@ services:
       - ./data:/app/database  # een BIND MOUNT naar lokale map
     depends_on:
       - rabbitmq
+    networks:
+      - ecommerce-net
 
   worker:
     build:
@@ -37,6 +41,12 @@ services:
       - ./data:/app/database
     depends_on:
       - rabbitmq
+    networks:
+      - ecommerce-net
+
+networks:
+  ecommerce-net:
+    driver: bridge
 
 volumes:
   rabbitmq-data:

@@ -64,7 +64,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddMassTransit(x =>
         {
             x.AddConsumer<CreateOrderCommandConsumer>();
-            x.AddConsumer<DeleteOrderCommandConsumer> ();
+            x.AddConsumer<DeleteOrderCommandConsumer>();
+            x.AddConsumer<UpdateOrderCommandConsumer>();
             x.AddConsumer<OrderEventsConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>

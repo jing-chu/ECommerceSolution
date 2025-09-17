@@ -24,7 +24,7 @@ public class OrdersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _mediator.Send(new GetAllOrdersQuery());
+        var orders = await _mediator.Send(new GetAllOrdersQuery());  //Get all with type orderSummaries
         return orders is null ? NotFound() : Ok(orders);
     }
 
@@ -38,7 +38,7 @@ public class OrdersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var order = await _mediator.Send(new GetOrderByIdQuery(id));
+        var order = await _mediator.Send(new GetOrderByIdQuery(id));  //Get by id with type order  
         return order is null ? NotFound() : Ok(order);
     }
 
@@ -57,15 +57,9 @@ public class OrdersController : ControllerBase
         if (id != command.Id)
             return BadRequest("Id mismatch");
 
-        try
-        {
-            await _mediator.Send(command);
-            return NoContent();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        await _publishEndpoint.Publish(command);
+        return Accepted();
+
     }
 
     [HttpDelete("{id}")]
