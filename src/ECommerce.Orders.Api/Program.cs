@@ -8,6 +8,7 @@ using ECommerce.Orders.Application.Products.Commands.UpdateProduct;
 using ECommerce.Orders.Application.Products.Queries.GetAllProducts;
 using ECommerce.Orders.Application.Products.Queries.GetProductById;
 using ECommerce.Orders.Contracts.Orders.Commands;
+using ECommerce.Orders.Domain;
 using ECommerce.Orders.Infrastructure;
 using ECommerce.Orders.Infrastructure.Persistence.Repositories;
 using MassTransit;
@@ -89,6 +90,14 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+    //Seeding: standaardproducten toevoegen
+    if (!dbContext.Products.Any())
+    {
+        dbContext.Products.Add(new Product { Name = "Laptop Pro 16", Price = 2500.00m });
+        dbContext.Products.Add(new Product { Name = "Draadloze Muis", Price = 75.50m });
+        dbContext.Products.Add(new Product { Name = "Mechanisch Toetsenbord", Price = 150.00m });
+        dbContext.SaveChanges();
+    }
 }
 
 // Configure the HTTP request pipeline.
